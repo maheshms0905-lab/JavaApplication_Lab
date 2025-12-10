@@ -1,0 +1,46 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.maven.metadata.xml
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Compiled
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# IDE Specific
+out/
+.gradle/
+.sts4-cache/
+
+# Custom
+.env
+local.properties
+
