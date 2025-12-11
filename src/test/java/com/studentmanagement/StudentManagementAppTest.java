@@ -2,6 +2,8 @@ package com.studentmanagement;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -255,6 +257,108 @@ public class StudentManagementAppTest {
         assertEquals("Test Updated", updated.getName());
         assertEquals(26, updated.getAge());
         assertEquals(originalId, updated.getId());
+    }
+
+    // ========== PARAMETERIZED TESTS FOR addStudent ==========
+
+    @ParameterizedTest
+    @MethodSource("com.studentmanagement.StudentTestDataProvider#provideStudentDataForAddition")
+    @DisplayName("Test addStudent with various names and ages")
+    public void testAddStudentParameterized(String name, int age) {
+        StudentService service = new StudentService();
+
+        // Act: Add student
+        Student student = service.addStudent(name, age);
+
+        // Assert: Verify student was added with correct data
+        assertNotNull(student, "Student should not be null");
+        assertEquals(name, student.getName(), "Name should match input");
+        assertEquals(age, student.getAge(), "Age should match input");
+        assertEquals(1, student.getId(), "First student should have ID 1");
+        assertEquals(1, service.getAllStudents().size(), "Service should have 1 student");
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.studentmanagement.StudentTestDataProvider#provideStudentDataForIdIncrement")
+    @DisplayName("Test addStudent ID increments correctly for multiple students")
+    public void testAddStudentIdIncrement(String name, int age) {
+        StudentService service = new StudentService();
+
+        // Act: Add multiple students and verify IDs increment sequentially
+        Student student1 = service.addStudent("First", 20);
+        Student student2 = service.addStudent("Second", 21);
+        Student student3 = service.addStudent(name, age);
+
+        // Assert: Verify sequential IDs and that third student has correct data
+        assertEquals(1, student1.getId(), "First student should have ID 1");
+        assertEquals(2, student2.getId(), "Second student should have ID 2");
+        assertEquals(3, student3.getId(), "Third student should have ID 3");
+        assertEquals(name, student3.getName(), "Student name should match");
+        assertEquals(age, student3.getAge(), "Student age should match");
+        assertEquals(3, service.getAllStudents().size(), "Service should have 3 students");
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.studentmanagement.StudentTestDataProvider#provideStudentDataWithSpecialCharacters")
+    @DisplayName("Test addStudent with special characters in names")
+    public void testAddStudentSpecialCharactersParameterized(String name, int age) {
+        StudentService service = new StudentService();
+
+        // Act: Add student with special characters
+        Student student = service.addStudent(name, age);
+
+        // Assert: Verify special characters are preserved
+        assertNotNull(student);
+        assertEquals(name, student.getName(), "Special characters should be preserved");
+        assertEquals(age, student.getAge());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.studentmanagement.StudentTestDataProvider#provideStudentDataWithBoundaryAges")
+    @DisplayName("Test addStudent with boundary ages")
+    public void testAddStudentBoundaryAgesParameterized(String name, int age) {
+        StudentService service = new StudentService();
+
+        // Act: Add student with boundary age values
+        Student student = service.addStudent(name, age);
+
+        // Assert: Verify age values are accepted
+        assertNotNull(student);
+        assertEquals(name, student.getName());
+        assertEquals(age, student.getAge(), "Boundary age values should be accepted");
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.studentmanagement.StudentTestDataProvider#provideStudentDataWithEdgeCaseNames")
+    @DisplayName("Test addStudent with edge case names")
+    public void testAddStudentEdgeCaseNamesParameterized(String name, int age) {
+        StudentService service = new StudentService();
+
+        // Act: Add student with edge case names
+        Student student = service.addStudent(name, age);
+
+        // Assert: Verify edge case names are handled
+        assertNotNull(student);
+        assertEquals(name, student.getName(), "Edge case names should be accepted");
+        assertEquals(age, student.getAge());
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.studentmanagement.StudentTestDataProvider#provideStudentDataForMultipleOperations")
+    @DisplayName("Test addStudent multiple calls maintain list integrity")
+    public void testAddStudentMultipleCallsParameterized(String name, int age) {
+        StudentService service = new StudentService();
+
+        // Act: Add student
+        Student student = service.addStudent(name, age);
+
+        // Also add another to test list integrity
+        Student student2 = service.addStudent("ExtraStudent", 25);
+
+        // Assert: Verify both students exist
+        assertEquals(2, service.getAllStudents().size(), "Both students should be in list");
+        assertTrue(service.getAllStudents().stream().anyMatch(s -> s.getName().equals(name)));
+        assertTrue(service.getAllStudents().stream().anyMatch(s -> s.getName().equals("ExtraStudent")));
     }
 }
 
